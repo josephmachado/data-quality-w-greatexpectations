@@ -1,4 +1,7 @@
+from pathlib import Path
+
 import sqlite3
+import great_expectations as gx
 
 def write_non_validated_base_state(db_cursor):
     db_cursor.execute(
@@ -93,32 +96,61 @@ def publish_dim_customer(db_cursor):
     pass
 
 def audit(expectation_suite_to_check):
-    print(expectation_suite_to_check)
-    pass
+    context_root_dir = Path.cwd() / "ecommerce" / "ecommerce" / "great_expectations" / "gx"
+    expc_json_path = context_root_dir / "expectations" / f"{expectation_suite_to_check}.json"
+    file_path = Path(expc_json_path)
 
-def check_audit_failures(expectation_suite_to_check):
-    print(expectation_suite_to_check)
-    return True 
+    if file_path.exists():
+        # validate
+        context = gx.get_context(
+            context_root_dir=context_root_dir        )
+        validations = []
+        validations.append(
+            {
+                "batch_request": context.get_datasource("ecommerce_db").get_asset(expectation_suite_to_check).build_batch_request(),
+                "expectation_suite_name": expectation_suite_to_check,
+            }
+        )
+        return context.run_checkpoint(
+            checkpoint_name="dq_checkpoint", validations=validations
+        ).list_validation_results()
+    else:
+        return None 
+
+def check_audit_failures(validation_results):
+    if not validation_results:
+        return True
+
+    results = []
+    # get all the "success" values 
+    for validation_result in validation_results:
+        results.append(validation_result.get('success'))
+    return all(results) 
 
 def run():
     conn = sqlite3.connect('ecommerce.db')
     cursor = conn.cursor()
 
-    # # NOTE: transform -> non_validated_table -> Validate -> table
+    # NOTE: transform -> non_validated_table -> Validate -> table
     write_non_validated_base_customer(cursor)
-    audit('non_validated_base_customer')
-    if check_audit_failures('non_validated_base_customer'):
+    base_customer_validation_result = audit('non_validated_base_customer')
+    if check_audit_failures(base_customer_validation_result ):
         publish_base_customer(cursor)
 
     write_non_validated_base_state(cursor)
-    audit('non_validated_base_state')
-    if check_audit_failures('non_validated_base_state'):
+    base_state_validation_result = audit('non_validated_base_state')
+    if check_audit_failures(base_state_validation_result):
         publish_base_state(cursor)
 
     write_non_validated_dim_customer(cursor)
-    audit('non_validated_dim_customer')
-    if check_audit_failures('non_validated_dim_customer'):
+    dim_customer_validation_result = audit('non_validated_dim_customer')
+    if check_audit_failures(dim_customer_validation_result):
         publish_dim_customer(cursor)
+
+    # Truncate intermediate table if no failures
+    cursor.execute("DELETE FROM non_validated_base_customer;")
+    cursor.execute("DELETE FROM non_validated_base_state;")
+    cursor.execute("DELETE FROM non_validated_dim_customer;")
 
     # Commit the changes and close the connection
     conn.commit()
