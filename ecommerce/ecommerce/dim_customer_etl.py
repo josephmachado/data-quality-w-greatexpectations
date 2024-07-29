@@ -144,7 +144,7 @@ def run():
     if check_audit_failures(base_customer_validation_result ):
         publish_base_customer(cursor)
     else:
-        print("======== base_ccustomer DQ check failed ==========")
+        print("======== base_customer DQ check failed ==========")
         print(base_customer_validation_result)
         sys.exit(1)
 
