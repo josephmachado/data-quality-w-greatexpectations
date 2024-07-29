@@ -97,7 +97,7 @@ def publish_dim_customer(db_cursor):
     pass
 
 def audit(expectation_suite_to_check):
-    context_root_dir = Path.cwd() / "ecommerce" / "ecommerce" / "great_expectations" / "gx"
+    context_root_dir = Path.cwd() / "ecommerce" / "ecommerce" / "gx"
     expc_json_path = context_root_dir / "expectations" / f"{expectation_suite_to_check}.json"
     file_path = Path(expc_json_path)
 
