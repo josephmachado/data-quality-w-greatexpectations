@@ -124,7 +124,12 @@ def check_audit_failures(validation_results):
     results = []
     # get all the "success" values 
     for validation_result in validation_results:
-        results.append(validation_result.get('success'))
+        for result in validation_result.get('results', []):
+            if result.get("expectation_config", {}).get('meta', {}).get('level', 'ERROR') == 'ERROR':
+                results.append(result.get('success'))
+            else:
+                print("================THIS IS A WARNING DQ ISSUE==================")
+                print(result)
     return all(results) 
 
 def run():
