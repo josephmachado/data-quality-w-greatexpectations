@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 import sqlite3
@@ -103,7 +104,7 @@ def audit(expectation_suite_to_check):
     if file_path.exists():
         # validate
         context = gx.get_context(
-            context_root_dir=context_root_dir        )
+            context_root_dir=context_root_dir)
         validations = []
         validations.append(
             {
@@ -136,26 +137,36 @@ def run():
     conn = sqlite3.connect('ecommerce.db')
     cursor = conn.cursor()
 
-    # NOTE: transform -> non_validated_table -> Validate -> table
+    # NOTE: WRITE -> AUDIT -> PUBLISH pattern
     write_non_validated_base_customer(cursor)
+
     base_customer_validation_result = audit('non_validated_base_customer')
     if check_audit_failures(base_customer_validation_result ):
         publish_base_customer(cursor)
+    else:
+        print("======== base_ccustomer DQ check failed ==========")
+        print(base_customer_validation_result)
+        sys.exit(1)
 
     write_non_validated_base_state(cursor)
     base_state_validation_result = audit('non_validated_base_state')
     if check_audit_failures(base_state_validation_result):
         publish_base_state(cursor)
+    else:
+        print("======== base_state DQ check failed ==========")
+        print(base_state_validation_result)
+        sys.exit(1)
 
     write_non_validated_dim_customer(cursor)
+    conn.commit()
+
     dim_customer_validation_result = audit('non_validated_dim_customer')
     if check_audit_failures(dim_customer_validation_result):
         publish_dim_customer(cursor)
-
-    # Truncate intermediate table if no failures
-    cursor.execute("DELETE FROM non_validated_base_customer;")
-    cursor.execute("DELETE FROM non_validated_base_state;")
-    cursor.execute("DELETE FROM non_validated_dim_customer;")
+    else:
+        print("======== dim_customer DQ check failed ==========")
+        print(dim_customer_validation_result)
+        sys.exit(1)
 
     # Commit the changes and close the connection
     conn.commit()

@@ -11,7 +11,7 @@
         "level": "ERROR"
       }
     },
-  {
+    {
       "expectation_type": "expect_column_values_to_not_be_null",
       "kwargs": {
         "column": "state_code"
@@ -19,8 +19,16 @@
       "meta": {
         "level": "WARN"
       }
+    },
+    {
+      "expectation_type": "expect_table_row_count_to_equal_other_table",
+      "kwargs": {
+        "other_table_name": "raw_customer"
+      },
+      "meta": {
+        "level": "ERROR"
+      }
     }
-
   ],
   "ge_cloud_id": null,
   "meta": {
