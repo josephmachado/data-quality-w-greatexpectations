@@ -1,0 +1,20 @@
+{
+  "data_asset_type": null,
+  "expectation_suite_name": "dim_customer_dt_created_count",
+  "expectations": [
+    {
+      "expectation_type": "expect_column_value_z_scores_to_be_less_than",
+      "kwargs": {
+        "column": "cnt",
+        "threshold": 3,
+        "double_sided": true 
+      },
+      "meta": {
+        "level": "ERROR"
+      }
+    }  ],
+  "ge_cloud_id": null,
+  "meta": {
+    "great_expectations_version": "0.18.19"
+  }
+}

@@ -137,6 +137,11 @@ def run():
     conn = sqlite3.connect('ecommerce.db')
     cursor = conn.cursor()
 
+    cursor.execute("DELETE FROM non_validated_dim_customer;")
+    cursor.execute("DELETE FROM non_validated_base_customer;")
+    cursor.execute("DELETE FROM non_validated_base_state")
+    conn.commit()
+
     # NOTE: WRITE -> AUDIT -> PUBLISH pattern
     write_non_validated_base_customer(cursor)
 
@@ -161,6 +166,7 @@ def run():
     conn.commit()
 
     dim_customer_validation_result = audit('non_validated_dim_customer')
+    dim_customer_count_anomaly = audit('dim_customer_dt_created_count')
     if check_audit_failures(dim_customer_validation_result):
         publish_dim_customer(cursor)
     else:
