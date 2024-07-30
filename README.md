@@ -7,7 +7,7 @@ You can run this via
 
 ### 1.1. Github Codespaces
 
-Simply click on this **[link]** and you will be able to run your own code space with this repository. Wait for a few minutes for codespaces to install all the packages in **[requirements.txt](./requirements.txt)**.
+Simply click on this **[link](https://github.com/codespaces/new?skip_quickstart=true&machine=basicLinux32gb&repo=835341653&ref=main&geo=UsEast)** and you will be able to run your own code space with this repository. Wait for a few minutes for codespaces to install all the packages in **[requirements.txt](./requirements.txt)**.
 
 :heavy_exclamation_mark: **Caution**: Codespaces only have limited free availability
 
