@@ -1,4 +1,13 @@
 
+
+* [1. Setup](#1-setup)
+    * [1.1. Github Codespaces](#11-github-codespaces)
+    * [1.2. Locally with virtual environment](#12-locally-with-virtual-environment)
+    * [1.3. Create the tables necessary for the ETL](#13-create-the-tables-necessary-for-the-etl)
+* [2. Run ETL](#2-run-etl)
+* [3. Test ETL output](#3-test-etl-output)
+* [4. Validation results](#4-validation-results)
+
 Code for the blog: **[How to implement data quality checks with greatexpectations](https://www.startdataengineering.com/post/implement_data_quality_with_great_expectations/)**
 
 ## 1. Setup
